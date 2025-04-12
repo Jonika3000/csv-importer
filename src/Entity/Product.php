@@ -6,7 +6,14 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ORM\Table(name: "tblProductData", indexes: [new ORM\Index(name: "strProductCode_idx", columns: ["code"])])]
+#[ORM\Table(
+    name: "tblProductData",
+    indexes: [new ORM\Index(name: "strProductCode_idx", columns: ["code"])],
+    options: [
+        "charset" => "latin1",
+        "collation" => "latin1_swedish_ci"
+    ]
+)]
 class Product
 {
     #[ORM\Id]
@@ -32,6 +39,12 @@ class Product
     #[ORM\Column(type: "datetime")]
     #[ORM\Version]
     private ?\DateTimeInterface $timestamp = null;
+
+    #[ORM\Column(type: "integer", options: ["unsigned" => true])]
+    private ?int $stockLevel = null;
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    private ?string $price = null;
 
     public function getId(): ?int
     {
@@ -94,6 +107,30 @@ class Product
     public function setDiscontinuedAt(?\DateTimeImmutable $discontinuedAt): static
     {
         $this->discontinuedAt = $discontinuedAt;
+
+        return $this;
+    }
+
+    public function getStockLevel(): ?int
+    {
+        return $this->stockLevel;
+    }
+
+    public function setStockLevel(?int $stockLevel): static
+    {
+        $this->stockLevel = $stockLevel;
+
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?string $price): static
+    {
+        $this->price = $price;
 
         return $this;
     }
