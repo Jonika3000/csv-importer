@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Importer\CsvProductImporter;
 
 use App\Common\Validator\ProductValidator;
 use App\Encoder\ProductEncoder;
@@ -10,7 +10,7 @@ use App\Helper\Import\ImportResult;
 use App\Repository\ProductRepository;
 use Symfony\Component\Validator\Exception\ValidatorException;
 
-class ProductService
+class MainPartnerCsvProductImporter implements CsvProductImporter
 {
     public function __construct(
         private readonly ProductRepository $productRepository,
@@ -23,9 +23,9 @@ class ProductService
 
     }
 
-    public function importFromCsv(string $file, bool $testMode): ImportResult
+    public function import(string $filePath, bool $testMode): ImportResult
     {
-        $data = $this->fileParser->parseCsvFile($file);
+        $data = $this->fileParser->parseCsvFile($filePath);
         $counter = count($data);
 
         for($i = 0; $i < $counter; $i++) {
@@ -39,12 +39,17 @@ class ProductService
             $product = $this->productEncoder->encode($data[$i]);
 
             if (!$testMode) {
-                    $this->productRepository->save($product);
+                $this->productRepository->save($product);
             }
 
             $this->reporter->reportSuccess($product);
         }
 
         return $this->reporter->getResults();
+    }
+
+    public function fileIsSupported(string $filePath): bool
+    {
+        return str_contains(basename($filePath), 'main');
     }
 }

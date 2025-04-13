@@ -2,9 +2,11 @@
 
 namespace App\Command;
 
+use App\Common\Exception\CsvProductImporterException;
 use App\Common\Validator\FileValidator;
 use App\Helper\DisplayHelper;
 use App\Helper\Import\ImportResult;
+use App\Importer\CsvProductImporter\CsvProductImporterRegistry;
 use App\Service\ProductService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,7 +23,7 @@ class ProductImportCommand extends Command
 {
 
     public function __construct(
-        private readonly ProductService $productService,
+        private readonly CsvProductImporterRegistry $importerRegistry,
         private readonly FileValidator  $fileValidator
     )
     {
@@ -42,12 +44,13 @@ class ProductImportCommand extends Command
 
         try {
             $this->fileValidator->validateCsvFile($file);
+            $importer = $this->importerRegistry->findByCsvFile($file);
+            $result = $importer->import($file, $testMode);
         } catch (\Exception $exception) {
             $this->displayError($output, $exception->getMessage());
             return Command::FAILURE;
         }
 
-        $result = $this->productService->importFromCsv($file, $testMode);
         $this->displayResults($output, $result);
 
         return $result->getSkippedCount() > 0 ? Command::FAILURE : Command::SUCCESS;
