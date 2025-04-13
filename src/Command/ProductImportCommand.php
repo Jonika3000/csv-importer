@@ -2,12 +2,9 @@
 
 namespace App\Command;
 
-use App\Common\Exception\CsvProductImporterException;
 use App\Common\Validator\FileValidator;
-use App\Helper\DisplayHelper;
 use App\Helper\Import\ImportResult;
 use App\Importer\CsvProductImporter\CsvProductImporterRegistry;
-use App\Service\ProductService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
