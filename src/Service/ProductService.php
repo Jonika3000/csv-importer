@@ -8,6 +8,7 @@ use App\Helper\FileParser;
 use App\Helper\Import\ImportReporter;
 use App\Helper\Import\ImportResult;
 use App\Repository\ProductRepository;
+use Symfony\Component\Validator\Exception\ValidatorException;
 
 class ProductService
 {
@@ -28,24 +29,20 @@ class ProductService
         $counter = count($data);
 
         for($i = 0; $i < $counter; $i++) {
-            $validationResult = $this->productValidator->validateRow($data[$i]);
-
-            if ($validationResult !== true) {
-                $this->reporter->reportError($data[$i], $validationResult['reason']);
+            try {
+                $this->productValidator->validateRow($data[$i]);
+            } catch (ValidatorException $e) {
+                $this->reporter->reportError($data[$i], $e->getMessage());
                 continue;
             }
 
-            try {
-                $product = $this->productEncoder->transform($data[$i]);
+            $product = $this->productEncoder->encode($data[$i]);
 
-                if (!$testMode) {
+            if (!$testMode) {
                     $this->productRepository->save($product);
-                }
-
-                $this->reporter->reportSuccess($product);
-            } catch (\Throwable $e) {
-                $this->reporter->reportError($data[$i], $e->getMessage());
             }
+
+            $this->reporter->reportSuccess($product);
         }
 
         return $this->reporter->getResults();

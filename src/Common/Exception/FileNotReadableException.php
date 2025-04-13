@@ -2,7 +2,7 @@
 
 namespace App\Common\Exception;
 
-class FileNotReadable extends \Exception
+class FileNotReadableException extends \Exception
 {
     protected $message = 'File not readable';
 }

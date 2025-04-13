@@ -7,7 +7,7 @@ use DateTimeImmutable;
 
 class ProductEncoder
 {
-    public function transform(array $row): Product
+    public function encode(array $row): Product
     {
         [$code, $name, $desc, $stock, $price, $discontinued] = array_map('trim', $row);
 

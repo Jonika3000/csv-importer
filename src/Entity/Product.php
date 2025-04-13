@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -19,32 +20,36 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", options: ["unsigned" => true])]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 50)]
-    private ?string $name = null;
+    private ?string $name;
 
     #[ORM\Column(length: 255)]
-    private ?string $description = null;
+    private ?string $description;
 
     #[ORM\Column(length: 10, unique: true)]
-    private ?string $code = null;
+    private ?string $code;
 
-    #[ORM\Column(type: "datetime", nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $addedAt = null;
 
-    #[ORM\Column(type: "datetime", nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $discontinuedAt = null;
 
-    #[ORM\Column(type: "datetime")]
-    #[ORM\Version]
-    private ?\DateTimeInterface $timestamp = null;
+    #[ORM\Column]
+    private int $timestamp;
 
-    #[ORM\Column(type: "integer", options: ["unsigned" => true])]
+    #[ORM\Column(type: "integer", nullable: true, options: ["unsigned" => true])]
     private ?int $stockLevel = null;
 
-    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2, nullable: true)]
     private ?string $price = null;
+
+    public function __construct()
+    {
+        $this->timestamp = time();
+    }
 
     public function getId(): ?int
     {
@@ -133,5 +138,15 @@ class Product
         $this->price = $price;
 
         return $this;
+    }
+
+    public function setTimestamp(int $timestamp): void
+    {
+        $this->timestamp = $timestamp;
+    }
+
+    public function getTimestamp(): int
+    {
+        return $this->timestamp;
     }
 }

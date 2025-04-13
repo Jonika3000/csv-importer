@@ -3,14 +3,14 @@
 namespace App\Common\Validator;
 
 use App\Common\Exception\FileNotFoundException;
-use App\Common\Exception\FileNotReadable;
+use App\Common\Exception\FileNotReadableException;
 use InvalidArgumentException;
 
 class FileValidator
 {
     /**
      * @throws FileNotFoundException
-     * @throws FileNotReadable
+     * @throws FileNotReadableException
      * @throws InvalidArgumentException
      */
     public function validateCsvFile(string $filePath): void
@@ -20,7 +20,7 @@ class FileValidator
         }
 
         if (!is_readable($filePath)) {
-            throw new FileNotReadable();
+            throw new FileNotReadableException();
         }
 
         if (strtolower(pathinfo($filePath, PATHINFO_EXTENSION)) !== 'csv') {
