@@ -15,4 +15,11 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
+
+    public function saveAction(Product $product): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($product);
+        $entityManager->flush();
+    }
 }
