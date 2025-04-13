@@ -18,7 +18,7 @@ class FileParser
 
         $data = [];
 
-        foreach ($sheet->getRowIterator() as $rowIndex => $row) {
+        foreach ($sheet->getRowIterator() as $row) {
             $rowData = [];
             foreach ($row->getCellIterator() as $cell) {
                 $rowData[] = trim($cell->getValue());

@@ -15,18 +15,19 @@ class ProductService
         private readonly ProductRepository $productRepository,
         private readonly FileParser        $fileParser,
         private readonly ProductValidator  $productValidator,
-        private readonly ProductEncoder $productDataEncoder,
-        private ImportReporter $reporter
+        private readonly ProductEncoder $productEncoder,
+        private readonly ImportReporter $reporter
     )
     {
 
     }
 
-    public function importFromExcel(string $file, bool $testMode): ImportResult
+    public function importFromCsv(string $file, bool $testMode): ImportResult
     {
         $data = $this->fileParser->parseCsvFile($file);
+        $counter = count($data);
 
-        for($i = 0; $i < count($data); $i++) {
+        for($i = 0; $i < $counter; $i++) {
             $validationResult = $this->productValidator->validateRow($data[$i]);
 
             if ($validationResult !== true) {
@@ -35,10 +36,10 @@ class ProductService
             }
 
             try {
-                $product = $this->productDataEncoder->transform($data[$i]);
+                $product = $this->productEncoder->transform($data[$i]);
 
                 if (!$testMode) {
-                    $this->productRepository->saveAction($product);
+                    $this->productRepository->save($product);
                 }
 
                 $this->reporter->reportSuccess($product);
