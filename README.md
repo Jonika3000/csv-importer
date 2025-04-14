@@ -1,6 +1,8 @@
 # Product CSV Importer
 
 A Symfony console application for importing product data from CSV files with validation.
+Import depends on the data provider: the appropriate importer is selected via fileIsSupported(). The CsvProductImporterRegistry finds the matching class or throws an exception.
+The file public/data/main_partner_stock.csv serves as an example.
 
 ## Installation
 
